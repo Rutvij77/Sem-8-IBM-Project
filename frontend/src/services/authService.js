@@ -17,6 +17,24 @@ export async function signupUser({ username, email, password }) {
       return { success: false, message: error.message };
     }
 
+    const user = data.user;
+    if (!user) {
+      return { success: false, message: "Signup failed" };
+    }
+
+    // 2️⃣ Create profile in backend BEFORE returning for verification
+    await fetch(`${API_URL}/register-profile`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: user.id,
+        username,
+        email,
+      }),
+    });
+
     if (!data.session) {
       return {
         success: true,
@@ -24,28 +42,6 @@ export async function signupUser({ username, email, password }) {
         message: "Please check your email to verify your account.",
       };
     }
-
-    const session = data.session;
-    const user = data.user;
-
-    console.log("Session:", session);
-
-    if (!user) {
-      return { success: false, message: "Signup failed" };
-    }
-
-    // 2️⃣ Create profile in backend
-    await fetch(`${API_URL}/create-profile`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`,
-      },
-      body: JSON.stringify({
-        username,
-        email,
-      }),
-    });
 
     return { success: true };
   } catch (err) {
@@ -66,12 +62,35 @@ export async function loginUser({ email, password }) {
       return { success: false, message: error.message };
     }
 
+    const res = await fetch("http://localhost:5000/api/auth/me", {
+      headers: { Authorization: `Bearer ${data.session.access_token}` },
+    });
+
+    if (res.ok) {
+      const pData = await res.json();
+      if (!pData || pData.length === 0 || !pData[0].is_active) {
+        await supabase.auth.signOut();
+        return { success: false, message: "Your account is deactivated. Please contact an administrator." };
+      }
+    } else {
+      const { data: currentSession } = await supabase.auth.getSession();
+      await supabase.auth.signOut();
+      if (!currentSession.session) {
+        return { success: false, message: "Your account is deactivated. Please contact an administrator." };
+      }
+      return { success: false, message: "Failed to verify account status. Please try again." };
+    }
+
     return {
       success: true,
       session: data.session,
       user: data.user,
     };
-  } catch {
+  } catch (err) {
+    const { data: currentSession } = await supabase.auth.getSession();
+    if (!currentSession.session) {
+      return { success: false, message: "Your account is deactivated. Please contact an administrator." };
+    }
     return { success: false, message: "Server error" };
   }
 }

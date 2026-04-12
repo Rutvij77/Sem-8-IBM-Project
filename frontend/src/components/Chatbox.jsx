@@ -205,7 +205,7 @@ export default function Chatbot() {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const currentHistory = [...messages];
+    const currentHistory = messages.slice(-6);
     const userMsg = { role: "user", text: input };
 
     setMessages((prev) => [...prev, userMsg]);

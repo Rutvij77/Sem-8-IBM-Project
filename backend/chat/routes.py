@@ -49,4 +49,10 @@ def chat():
         return jsonify({'reply': response.text}), 200
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    # Catch the 503 specifically to tell the user to wait
+        error_msg = str(e)
+        if "503" in error_msg:
+            return jsonify({'error': "The AI is a bit busy right now. Please wait 10 seconds and try again!"}), 503
+        
+        print(f"Full Error Log: {error_msg}")
+        return jsonify({'error': error_msg}), 500

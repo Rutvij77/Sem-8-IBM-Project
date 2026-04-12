@@ -212,3 +212,26 @@
 .empty-state-btn:active {
   transform: translateY(0);
 }
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  min-width: 0; /* ← fixes grid blowout */
+}
+
+.chart-card {
+  background: #ffffff;
+  border: 1px solid #d0dce8;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  min-width: 0; /* ← critical: stops card from expanding */
+  overflow: hidden; /* ← clips the chart inside the card */
+}
+
+.chart-card .scroll-chart-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+}

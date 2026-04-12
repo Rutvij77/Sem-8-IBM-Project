@@ -54,16 +54,18 @@ import {
   ScatterChart,
   Scatter,
   ResponsiveContainer,
+  ReferenceLine,
 } from "recharts";
 import { fetchDashboardData } from "../services/dashboardService";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "../styles/dashboard.css";
 
 const BLUE = "#0066cc";
 const ORANGE = "#f97316";
+const SPEED_LIMIT = 60;
 
 // Tooltip style reused across all charts
 const tooltipStyle = {
@@ -82,8 +84,11 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { startNavLoading, stopNavLoading } = useAuth();
+  const { startNavLoading, stopNavLoading, session } = useAuth();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const annotated_video_url = location.state?.annotated_video_url || "";
 
   const goToHome = () => {
     startNavLoading();
@@ -94,7 +99,13 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchDashboardData()
+    if (!session) return;
+
+    const token = session.access_token;
+    console.log("Token:", token);
+    console.log("Session:", session);
+
+    fetchDashboardData(token)
       .then((res) => {
         setData(res);
         setLoading(false);
@@ -103,7 +114,7 @@ const Dashboard = () => {
         setError(err.message);
         setLoading(false);
       });
-  }, []);
+  }, [session]);
 
   if (loading) {
     return (
@@ -230,6 +241,12 @@ const Dashboard = () => {
             <div className="kpi-value">{kpi.overspeed_percentage}%</div>
             <div className="kpi-label">Overspeed %</div>
           </div>
+          {kpi.total_ambulance > 0 && (
+            <div className="kpi-card" style={{ borderLeft: "4px solid #ef4444" }}>
+              <div className="kpi-value" style={{ color: "#ef4444" }}>{kpi.total_ambulance}</div>
+              <div className="kpi-label" style={{ color: "#ef4444", fontWeight: 600 }}>Ambulances Detected</div>
+            </div>
+          )}
         </div>
 
         {/* ── Charts ── */}
@@ -282,30 +299,67 @@ const Dashboard = () => {
 
           {/* Chart 3 — Speed sum by timestamp */}
           <div className="chart-card">
-            <div className="chart-title">Sum of Speed (kmph) by Timestamp</div>
-            <ResponsiveContainer width="100%" height={280}>
-              <ScatterChart>
+            <div className="chart-title">
+              🚨 Overspeeding Vehicles by Timestamp
+            </div>
+            <div className="scroll-chart-wrapper">
+              <ScatterChart
+                width={Math.max(chart3_speed_by_timestamp.length * 15, 800)}
+                height={280}
+                margin={{ top: 10, right: 20, bottom: 15, left: 60 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2eaf2" />
                 <XAxis
                   dataKey="video_time_seconds"
-                  name="Timestamp"
-                  tick={{ fill: "#5a7a99", fontSize: 9 }}
-                  angle={-45}
-                  textAnchor="end"
-                  height={70}
+                  name="Timestamp (s)"
+                  type="number"
+                  domain={([min, max]) => [Math.floor(min), Math.ceil(max)]}
+                  tickCount={10}
+                  tick={{ fill: "#5a7a99", fontSize: 11 }}
+                  label={{
+                    value: "Time (seconds)",
+                    position: "insideBottom",
+                    offset: -5,
+                    fill: "#5a7a99",
+                    fontSize: 12,
+                  }}
+                  height={35}
                 />
                 <YAxis
-                  dataKey="total_speed"
-                  name="Total Speed"
+                  dataKey="speed_kmph"
+                  name="Speed (kmph)"
+                  type="number"
+                  domain={([min, max]) => [
+                    Math.floor(min) - 5, // ← little padding below
+                    Math.ceil(max) + 5, // ← little padding above
+                  ]}
                   tick={tickStyle}
+                  label={{
+                    value: "Speed (kmph)",
+                    angle: -90,
+                    position: "insideLeft",
+                    fill: "#5a7a99",
+                    fontSize: 12,
+                  }}
                 />
                 <Tooltip
                   {...tooltipStyle}
                   cursor={{ strokeDasharray: "3 3" }}
                 />
-                <Scatter data={chart3_speed_by_timestamp} fill={BLUE} />
+                {/* Reference line showing speed limit */}
+                <ReferenceLine
+                  y={SPEED_LIMIT}
+                  stroke="#ef4444"
+                  strokeDasharray="6 3"
+                  label={{
+                    value: `Limit: ${SPEED_LIMIT} kmph`,
+                    fill: "#ef4444",
+                    fontSize: 11,
+                  }}
+                />
+                <Scatter data={chart3_speed_by_timestamp} fill={ORANGE} />
               </ScatterChart>
-            </ResponsiveContainer>
+            </div>
           </div>
 
           {/* Chart 4 — Count by speed range */}

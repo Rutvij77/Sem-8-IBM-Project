@@ -1,175 +1,180 @@
+/* ══════════════════════════════════
+   AUTH  — Login & Signup Pages
+══════════════════════════════════ */
+
 .auth-container {
   min-height: 100vh;
   background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.92)),
+    linear-gradient(160deg, rgba(10,13,28,0.96) 0%, rgba(15,20,45,0.95) 100%),
     url("https://images.unsplash.com/photo-1504384308090-c894fdcc538d");
   background-size: cover;
   background-position: center;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: Arial, sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .auth-card {
   background: #ffffff;
-  padding: 2.5rem;
-  width: 500px;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-  text-align: center;
+  padding: 32px 28px 28px;
+  width: 400px;
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.45);
 }
 
 .auth-title {
-  margin-bottom: 5px;
-  color: #203a43;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 3px;
+  text-align: center;
 }
 
 .auth-subtitle {
-  margin-bottom: 20px;
-  color: #555;
+  font-size: 0.8rem;
+  color: #64748b;
+  text-align: center;
+  margin-bottom: 22px;
 }
 
+/* Inputs */
 .auth-card input {
   width: 100%;
-  height: 46px;
-  padding: 0 44px 0 14px;
-  margin-bottom: 15px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  line-height: 46px;
+  height: 40px;
+  padding: 0 45px 0 12px;
+  margin-bottom: 12px;
+  border-radius: 7px;
+  border: 1px solid #e2e8f0;
+  font-size: 13px;
+  line-height: 40px;
   box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  color: #0f172a;
+  background: #f8fafc;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.auth-card input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.12);
 }
 
-.primary-btn {
-  width: 100%;
-  padding: 12px;
-  background: #203a43;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 15px;
-}
-
-.primary-btn:hover {
-  background: #2c5364;
-}
-
-.auth-footer {
-  margin-top: 20px;
-}
-
-.secondary-btn {
-  color: #203a43;
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.secondary-btn:hover {
-  text-decoration: underline;
-}
-
-.error-box {
-  background: #ffe0e0;
-  color: #b00000;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 5px;
-}
-
+/* Password wrapper */
 .password-wrapper {
   position: relative;
   width: 100%;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
-
 .password-wrapper input {
   width: 100%;
-  height: 46px;
-  padding: 0 44px 0 14px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
+  height: 40px;
+  padding: 0 45px 0 12px;
+  border-radius: 7px;
+  border: 1px solid #e2e8f0;
+  font-size: 13px;
   box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  color: #0f172a;
+  background: #f8fafc;
+  transition: border-color 0.15s, box-shadow 0.15s;
   margin-bottom: 0;
+}
+.password-wrapper input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.12);
 }
 
 .password-icon {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 45px;
+  top: 0; right: 0; bottom: 0;
+  width: 38px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding-right: 14px;
+  justify-content: center;
   cursor: pointer;
   pointer-events: auto;
 }
-
 .password-icon::before {
   content: "";
-  width: 20px;
-  height: 20px;
-  opacity: 0.65;
+  width: 18px;
+  height: 18px;
+  opacity: 0.5;
   background-repeat: no-repeat;
-  background-size: 20px 20px;
+  background-size: 18px 18px;
   background-position: center;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3 3l18 18M10.58 10.58A3 3 0 0012 15a3 3 0 002.42-4.42M9.88 5.1A9.94 9.94 0 0112 5c7 0 10 7 10 7a17.9 17.9 0 01-4.2 5.94M6.1 6.1A17.9 17.9 0 002 12s3 7 10 7a9.94 9.94 0 004.9-1.28'/></svg>");
 }
-
-.password-icon::before {
-  background-image: url("data:image/svg+xml;utf8,\<svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23666'>\<path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3 3l18 18M10.58 10.58A3 3 0 0012 15a3 3 0 002.42-4.42M9.88 5.1A9.94 9.94 0 0112 5c7 0 10 7 10 7a17.9 17.9 0 01-4.2 5.94M6.1 6.1A17.9 17.9 0 002 12s3 7 10 7a9.94 9.94 0 004.9-1.28'/>\</svg>");
-}
-
-/* Eye OPEN (when visible) */
 .password-icon.visible::before {
-  background-image: url("data:image/svg+xml;utf8,\<svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23666'>\<path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M1.5 12s4.5-7.5 10.5-7.5S22.5 12 22.5 12s-4.5 7.5-10.5 7.5S1.5 12 1.5 12z'/>\<circle cx='12' cy='12' r='3'/>\</svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M1.5 12s4.5-7.5 10.5-7.5S22.5 12 22.5 12s-4.5 7.5-10.5 7.5S1.5 12 1.5 12z'/><circle cx='12' cy='12' r='3'/></svg>");
 }
+.password-icon:hover::before { opacity: 0.9; }
 
-.password-icon:hover::before {
-  opacity: 1;
-}
-
-.primary-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.loading-bar {
-  margin-top: 12px;
-  height: 4px;
+/* Buttons */
+.primary-btn {
   width: 100%;
-  background: #e0e0e0;
+  padding: 10px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  transition: background 0.15s, transform 0.1s;
+}
+.primary-btn:hover { background: #4338ca; transform: translateY(-1px); }
+.primary-btn:active { transform: translateY(0); }
+.primary-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+/* Footer link */
+.auth-footer { margin-top: 16px; text-align: center; font-size: 12.5px; color: #64748b; }
+.secondary-btn { color: #4f46e5; font-weight: 600; text-decoration: none; }
+.secondary-btn:hover { text-decoration: underline; }
+
+/* Error / Success banners (in-card) */
+.error-box {
+  background: #fef2f2;
+  color: #991b1b;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  border: 1px solid #fecaca;
+}
+.success-box {
+  background: #f0fdf4;
+  color: #166534;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  border: 1px solid #bbf7d0;
+}
+
+/* Loading bar */
+.loading-bar {
+  margin-top: 10px;
+  height: 3px;
+  width: 100%;
+  background: #e2e8f0;
   border-radius: 4px;
   overflow: hidden;
   position: relative;
 }
-
 .loading-bar::before {
   content: "";
   position: absolute;
   height: 100%;
   width: 40%;
-  background: linear-gradient(90deg, #203a43, #2c5364);
-  animation: loading 1s infinite;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  animation: loadingBar 1s infinite;
 }
-
-@keyframes loading {
-  0% {
-    left: -40%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-.success-box {
-  background: #e6ffed;
-  color: #056d1f;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 5px;
+@keyframes loadingBar {
+  0%   { left: -40%; }
+  100% { left: 100%; }
 }

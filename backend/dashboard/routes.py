@@ -33,13 +33,16 @@ def get_dashboard_data():
         total_vehicles = len(data)
 
         incoming = [r for r in data if r["direction"] == "Incoming"]
-        outgoing = [r for r in data if r["direction"] == "Outcoming"]
+        outgoing = [r for r in data if r["direction"] == "Outgoing"]
         total_incoming = len(incoming)
         total_outgoing = len(outgoing)
 
         overspeed_vehicles = [r for r in data if r["is_overspeed"] == True]
         total_overspeed = len(overspeed_vehicles)
         overspeed_percentage = round((total_overspeed / total_vehicles) * 100, 2) if total_vehicles > 0 else 0
+
+        ambulances = [r for r in data if r.get("vehicle_type", "").lower() == "ambulance"]
+        total_ambulance = len(ambulances)
 
         # ── Chart 1: Count of vehicles by vehicle_type ─────────
         vehicle_type_count = {}
@@ -74,7 +77,14 @@ def get_dashboard_data():
             speed = r["speed_kmph"]
             speed_by_time[ts] = speed_by_time.get(ts, 0) + speed
 
-        chart3 = [{"video_time_seconds": k, "total_speed": v} for k, v in sorted(speed_by_time.items())]
+        # chart3 = [{"video_time_seconds": k, "total_speed": v} for k, v in sorted(speed_by_time.items())]
+        SPEED_LIMIT = 40  # change to your actual speed limit
+
+        chart3 = [
+            {"video_time_seconds": r["video_time_seconds"], "speed_kmph": r["speed_kmph"]}
+            for r in data
+            if r["speed_kmph"] > SPEED_LIMIT
+        ]
 
         # ── Chart 4: Count of vehicles by speed_range_bucket ───
         bucket_count = {}
@@ -84,14 +94,18 @@ def get_dashboard_data():
 
         chart4 = [{"speed_range": k, "count": v} for k, v in sorted(bucket_count.items())]
 
+        annotated_video_url = data[0].get("annotated_video_url", "") if data else ""
+
         # ── Final Response ──────────────────────────────────────
         return jsonify({
+            "annotated_video_url": annotated_video_url,
             "kpi": {
                 "total_vehicles": total_vehicles,
                 "total_incoming": total_incoming,
                 "total_outgoing": total_outgoing,
                 "total_overspeed": total_overspeed,
-                "overspeed_percentage": overspeed_percentage
+                "overspeed_percentage": overspeed_percentage,
+                "total_ambulance": total_ambulance
             },
             "chart1_vehicle_type_count": chart1,
             "chart2_speed_by_type": chart2,

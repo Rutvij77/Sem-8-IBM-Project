@@ -7,13 +7,16 @@ import { useAuth } from "../context/AuthContext";
 import "../styles/home.css";
 
 export default function Home() {
-  const { profile, startNavLoading, stopNavLoading } = useAuth();
+  const { profile, startNavLoading, stopNavLoading, session, addVideoSession } =
+    useAuth();
   const [video, setVideo] = useState(null);
   const [status, setStatus] = useState("");
   const [uploading, setUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
   const navigate = useNavigate();
+  const token = session?.access_token;
+  const [loadingMessage, setLoadingMessage] = useState("");
 
   const goToHome = () => {
     startNavLoading();
@@ -52,11 +55,92 @@ export default function Home() {
     }
   };
 
+  // const uploadVideo = async () => {
+  //   if (!video || uploading) return;
+
+  //   const token = session?.access_token;
+  //   if (!token) {
+  //     setStatus("Not authenticated. Please login again.");
+  //     return;
+  //   }
+
+  //   setUploading(true);
+  //   setStatus("Uploading...");
+  //   setVideoUrl("");
+
+  //   const formData = new FormData();
+  //   formData.append("video", video);
+
+  //   try {
+  //     const res = await fetch("http://localhost:5000/api/video/upload", {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: formData,
+  //     });
+
+  //     const data = await res.json();
+
+  //     if (!res.ok) {
+  //       setStatus(data.error || "Upload failed");
+  //       setUploading(false);
+  //       return;
+  //     }
+
+  //     setStatus("Upload successful! Starting analysis...");
+  //     setVideoUrl(data.video_url);
+  //     console.log("Cloudinary URL:", data.video_url);
+  //     const processRes = await fetch(
+  //       "http://localhost:5000/api/video/process",
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ video_url: data.video_url }),
+  //       },
+  //     );
+
+  //     const processData = await processRes.json();
+
+  //     if (!processRes.ok) {
+  //       setStatus("Upload done but analysis failed: " + processData.error);
+  //       return;
+  //     }
+
+  //     setStatus(
+  //       `Analysis complete! ${processData.total_rows} vehicle records stored.`,
+  //     );
+
+  //     // Navigate to dashboard after analysis
+  //     setTimeout(() => {
+  //       startNavLoading();
+  //       navigate("/dashboard", {
+  //         state: {
+  //           annotated_video_url: processData.annotated_video_url,
+  //         },
+  //       });
+  //     }, 2000);
+  //   } catch (err) {
+  //     setStatus("Server error");
+  //   } finally {
+  //     setUploading(false);
+  //   }
+  // };
+
   const uploadVideo = async () => {
     if (!video || uploading) return;
 
+    const token = session?.access_token;
+    if (!token) {
+      setStatus("Not authenticated. Please login again.");
+      return;
+    }
+
     setUploading(true);
-    setStatus("Uploading...");
+    setLoadingMessage("Uploading video to cloud...");
     setVideoUrl("");
 
     const formData = new FormData();
@@ -65,6 +149,7 @@ export default function Home() {
     try {
       const res = await fetch("http://localhost:5000/api/video/upload", {
         method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 
@@ -73,14 +158,82 @@ export default function Home() {
       if (!res.ok) {
         setStatus(data.error || "Upload failed");
         setUploading(false);
+        setLoadingMessage("");
         return;
       }
 
-      setStatus("Upload successful!");
-      setVideoUrl(data.video_url);
-      console.log("Cloudinary URL:", data.video_url);
+      const original_public_id = data.public_id;
+      setLoadingMessage("Analysing traffic footage...");
+
+      setTimeout(
+        () => setLoadingMessage("Detecting vehicles and calculating speeds..."),
+        5000,
+      );
+      setTimeout(
+        () => setLoadingMessage("Almost done, generating results..."),
+        30000,
+      );
+
+      const processRes = await fetch(
+        "http://localhost:5000/api/video/process",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            video_url: data.video_url,
+            file_name: video.name,       // original file name for analysis_history
+          }),
+        },
+      );
+
+      const processData = await processRes.json();
+
+      if (!processRes.ok) {
+        setStatus(
+          "Upload done but analysis failed: " +
+            (processData.details || processData.error),
+        );
+        setUploading(false);
+        setLoadingMessage("");
+        return;
+      }
+
+      // Extract annotated video public_id from URL
+      const annotated_url = processData.annotated_video_url;
+      const annotated_public_id = annotated_url
+        .split("/upload/")[1]
+        .split("/")
+        .slice(1)
+        .join("/")
+        .replace(".mp4", "");
+
+      setLoadingMessage("Analysis complete! Loading your video...");
+
+      // setTimeout(() => {
+      //   navigate("/videoplayer", {
+      //     state: {
+      //       annotated_video_url: annotated_url,
+      //       original_public_id: original_public_id,
+      //       annotated_public_id: `traffic_annotated_videos/${annotated_public_id.split("/").pop()}`,
+      //     },
+      //   });
+      // }, 1000);
+      addVideoSession(
+        annotated_url,
+        original_public_id,
+        `traffic_annotated_videos/${annotated_public_id.split("/").pop()}`,
+      );
+
+      setTimeout(() => {
+        navigate("/videoplayer"); // ← no state needed anymore
+      }, 1000);
     } catch (err) {
       setStatus("Server error");
+      setLoadingMessage("");
+      console.error(err);
     } finally {
       setUploading(false);
     }
@@ -91,6 +244,14 @@ export default function Home() {
       <Navbar />
 
       <main className="home">
+        {uploading && (
+          <div className="loading-overlay">
+            <div className="loading-box">
+              <div className="loading-spinner"></div>
+              <p className="loading-message">{loadingMessage}</p>
+            </div>
+          </div>
+        )}
         <div className="home-container">
           <div className="home-header">
             <h1>

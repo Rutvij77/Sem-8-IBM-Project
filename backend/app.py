@@ -20,6 +20,9 @@ def create_app():
     from dashboard.routes import dashboard_bp
     app.register_blueprint(dashboard_bp, url_prefix="/api/dashboard")
 
+    from tickets.routes import tickets_bp
+    app.register_blueprint(tickets_bp, url_prefix="/api/tickets")
+
     @app.route("/")
     def health():
         return {"status": "Backend running"}

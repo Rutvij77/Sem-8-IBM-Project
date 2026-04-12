@@ -32,6 +32,9 @@ class Config:
     CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY")
     CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET")
 
+    # Colab Model
+    COLAB_MODEL_URL = os.getenv("COLAB_MODEL_URL")
+
     # Gemini AI
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 

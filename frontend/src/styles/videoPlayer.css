@@ -1,0 +1,85 @@
+.videoplayer-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f0f4f8;
+}
+
+.videoplayer-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+}
+
+.videoplayer-container {
+  width: 100%;
+  max-width: 900px;
+}
+
+.videoplayer-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.videoplayer-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a2f4e;
+  margin-bottom: 0.5rem;
+}
+
+.videoplayer-header p {
+  color: #5a7a99;
+  font-size: 1rem;
+}
+
+.videoplayer-box {
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 102, 204, 0.15);
+}
+
+.videoplayer-video {
+  width: 100%;
+  max-height: 540px;
+  display: block;
+}
+
+.videoplayer-note {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: #fff8e1;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  color: #92400e;
+  font-size: 0.9rem;
+}
+
+.session-selector-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.session-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a2f4e;
+}
+
+.session-selector {
+  border: 1px solid #d0dce8;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: #1a2f4e;
+  background: #fff;
+  cursor: pointer;
+}
