@@ -28,6 +28,8 @@ def create_app():
         return {"status": "Backend running"}
     return app
 
+# Instantiate the app so Gunicorn can find it
+app = create_app()
+
 if __name__ == "__main__":
-    app = create_app()
     app.run(debug=True)
