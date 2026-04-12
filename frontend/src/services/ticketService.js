@@ -1,4 +1,4 @@
-const BASE = "http://localhost:5000/api/tickets";
+const BASE = (import.meta.env.VITE_API_URL || "http://localhost:5000") + "/api/tickets";
 
 const authHeaders = (token) => ({
   Authorization: `Bearer ${token}`,

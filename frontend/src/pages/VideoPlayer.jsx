@@ -28,7 +28,7 @@
 
 //     try {
 //       const token = session?.access_token;
-//       await fetch("http://localhost:5000/api/video/delete", {
+//       await fetch((import.meta.env.VITE_API_URL || "http://localhost:5000") + "/api/video/delete", {
 //         method: "POST",
 //         headers: {
 //           Authorization: `Bearer ${token}`,

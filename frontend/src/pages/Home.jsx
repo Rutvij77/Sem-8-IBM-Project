@@ -72,7 +72,7 @@ export default function Home() {
   //   formData.append("video", video);
 
   //   try {
-  //     const res = await fetch("http://localhost:5000/api/video/upload", {
+  //     const res = await fetch((import.meta.env.VITE_API_URL || "http://localhost:5000") + "/api/video/upload", {
   //       method: "POST",
   //       headers: {
   //         Authorization: `Bearer ${token}`,
@@ -92,7 +92,7 @@ export default function Home() {
   //     setVideoUrl(data.video_url);
   //     console.log("Cloudinary URL:", data.video_url);
   //     const processRes = await fetch(
-  //       "http://localhost:5000/api/video/process",
+  //       (import.meta.env.VITE_API_URL || "http://localhost:5000") + "/api/video/process",
   //       {
   //         method: "POST",
   //         headers: {
@@ -147,7 +147,7 @@ export default function Home() {
     formData.append("video", video);
 
     try {
-      const res = await fetch("http://localhost:5000/api/video/upload", {
+      const res = await fetch((import.meta.env.VITE_API_URL || "http://localhost:5000") + "/api/video/upload", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -175,7 +175,7 @@ export default function Home() {
       );
 
       const processRes = await fetch(
-        "http://localhost:5000/api/video/process",
+        (import.meta.env.VITE_API_URL || "http://localhost:5000") + "/api/video/process",
         {
           method: "POST",
           headers: {

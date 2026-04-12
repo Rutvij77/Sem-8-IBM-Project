@@ -165,7 +165,7 @@ export default function AdminPanel() {
     const form = e.target;
     
     try {
-      const res = await fetch("http://localhost:5000/api/auth/users", {
+      const res = await fetch((import.meta.env.VITE_API_URL || "http://localhost:5000") + "/api/auth/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

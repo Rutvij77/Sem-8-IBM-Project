@@ -70,7 +70,7 @@ export function AuthProvider({ children }) {
   const fetchProfile = async (token) => {
     if (!token) return false;
     try {
-      const res = await fetch("http://localhost:5000/api/auth/me", {
+      const res = await fetch((import.meta.env.VITE_API_URL || "http://localhost:5000") + "/api/auth/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -96,7 +96,7 @@ export function AuthProvider({ children }) {
         ip_address = ipData.ip || "";
       } catch (_) {}
 
-      await fetch("http://localhost:5000/api/auth/record-login", {
+      await fetch((import.meta.env.VITE_API_URL || "http://localhost:5000") + "/api/auth/record-login", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -142,7 +142,7 @@ export function AuthProvider({ children }) {
           .flatMap((s) => [s.original_public_id, s.annotated_public_id])
           .filter(Boolean);
 
-        await fetch("http://localhost:5000/api/video/delete", {
+        await fetch((import.meta.env.VITE_API_URL || "http://localhost:5000") + "/api/video/delete", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,

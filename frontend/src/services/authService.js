@@ -1,6 +1,6 @@
 import { supabase } from "./supabaseClient";
 
-const API_URL = "http://localhost:5000/api/auth";
+const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000") + "/api/auth";
 
 // 🔹 SIGNUP
 export async function signupUser({ username, email, password }) {
@@ -62,7 +62,7 @@ export async function loginUser({ email, password }) {
       return { success: false, message: error.message };
     }
 
-    const res = await fetch("http://localhost:5000/api/auth/me", {
+    const res = await fetch((import.meta.env.VITE_API_URL || "http://localhost:5000") + "/api/auth/me", {
       headers: { Authorization: `Bearer ${data.session.access_token}` },
     });
 

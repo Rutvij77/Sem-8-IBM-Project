@@ -1,6 +1,6 @@
 import { supabase } from "../services/supabaseClient"; // adjust path if needed
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || "http://localhost:5000") + "";
 
 // export const fetchDashboardData = async () => {
 //   const {
