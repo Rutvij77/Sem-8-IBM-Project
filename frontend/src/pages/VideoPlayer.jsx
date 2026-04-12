@@ -3,7 +3,7 @@
 // import Navbar from "../components/Navbar";
 // import Footer from "../components/Footer";
 // import { useAuth } from "../context/AuthContext";
-// import "../styles/videoplayer.css";
+// import "../styles/videoPlayer.css";
 
 // export default function VideoPlayer() {
 //   const location = useLocation();
@@ -93,7 +93,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
-import "../styles/videoplayer.css";
+import "../styles/videoPlayer.css";
 
 export default function VideoPlayer() {
   const navigate = useNavigate();
