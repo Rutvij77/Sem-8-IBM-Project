@@ -186,7 +186,7 @@ def admin_create_user():
         # It redirects them to the new update-password page
         auth_response = supabase.auth.admin.invite_user_by_email(
             email, 
-            options={"redirect_to": "http://localhost:5173/update-password"}
+            options={"redirect_to": "https://vehicle-intelligence-platform.vercel.app/update-password"}
         )
 
         if not auth_response.user:
