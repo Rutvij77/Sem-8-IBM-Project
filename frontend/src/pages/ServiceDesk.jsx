@@ -18,6 +18,7 @@ const priorityColor = { Low: "priority-low", Medium: "priority-medium", High: "p
 const statusColor   = { Open: "status-open", "In Progress": "status-inprogress", Resolved: "status-resolved", Closed: "status-closed" };
 
 const EMPTY_FORM = { title: "", priority: "Medium", category: "General", description: "", assigned_to: "" };
+const SD_ITEMS_PER_PAGE = 10;
 
 export default function ServiceDesk() {
   const { session, profile } = useAuth();
@@ -33,6 +34,7 @@ export default function ServiceDesk() {
   // Filters
   const [filterStatus, setFilterStatus] = useState("Active Only");
   const [filterPriority, setFilterPriority] = useState("All Priorities");
+  const [sdCurrentPage, setSdCurrentPage] = useState(1);
   const [filterCategory, setFilterCategory] = useState("All Categories");
 
   // View States
@@ -304,6 +306,7 @@ export default function ServiceDesk() {
     setFilterStatus("Active Only");
     setFilterPriority("All Priorities");
     setFilterCategory("All Categories");
+    setSdCurrentPage(1);
   };
 
   const stats = {
@@ -336,6 +339,39 @@ export default function ServiceDesk() {
       // 3. Fallback to newest created
       return new Date(b.created_at) - new Date(a.created_at);
     });
+
+  // Pagination for filtered tickets
+  const sdTotalItems = filteredTickets.length;
+  const sdTotalPages = Math.ceil(sdTotalItems / SD_ITEMS_PER_PAGE) || 1;
+  const paginatedTickets = filteredTickets.slice((sdCurrentPage - 1) * SD_ITEMS_PER_PAGE, sdCurrentPage * SD_ITEMS_PER_PAGE);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setSdCurrentPage(1);
+  }, [filterStatus, filterPriority, filterCategory]);
+
+  const handleSdPageChange = (page) => {
+    if (page >= 1 && page <= sdTotalPages) setSdCurrentPage(page);
+  };
+
+  const getSdPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5;
+    if (sdTotalPages <= maxVisible + 2) {
+      for (let i = 1; i <= sdTotalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      let start = Math.max(2, sdCurrentPage - 1);
+      let end = Math.min(sdTotalPages - 1, sdCurrentPage + 1);
+      if (sdCurrentPage <= 3) end = Math.min(maxVisible, sdTotalPages - 1);
+      else if (sdCurrentPage >= sdTotalPages - 2) start = Math.max(2, sdTotalPages - maxVisible + 1);
+      if (start > 2) pages.push("...");
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (end < sdTotalPages - 1) pages.push("...");
+      pages.push(sdTotalPages);
+    }
+    return pages;
+  };
 
   return (
     <div className="sd-wrapper">
@@ -444,9 +480,9 @@ export default function ServiceDesk() {
                     <tbody>
                       {loading ? (
                         <tr><td colSpan={8} className="empty-row">Loading...</td></tr>
-                      ) : filteredTickets.length === 0 ? (
+                      ) : paginatedTickets.length === 0 ? (
                         <tr><td colSpan={8} className="empty-row">No tickets match the criteria.</td></tr>
-                      ) : filteredTickets.map((t) => (
+                      ) : paginatedTickets.map((t) => (
                         <tr key={t.id} onClick={() => openDetail(t.id)} className="clickable-row">
                           <td className="td-id">#{t.id.substring(0,4)}</td>
                           <td className="td-title">{t.title}</td>
@@ -461,6 +497,30 @@ export default function ServiceDesk() {
                     </tbody>
                  </table>
                </div>
+               {sdTotalItems > 0 && (
+                 <div className="sd-pagination">
+                   <span className="sd-pagination-info">
+                     Showing {(sdCurrentPage - 1) * SD_ITEMS_PER_PAGE + 1} to {Math.min(sdCurrentPage * SD_ITEMS_PER_PAGE, sdTotalItems)} of {sdTotalItems} tickets
+                   </span>
+                   <div className="sd-pagination-controls">
+                     <button onClick={() => handleSdPageChange(sdCurrentPage - 1)} disabled={sdCurrentPage === 1} className="sd-page-btn">Prev</button>
+                     {getSdPageNumbers().map((page, idx) =>
+                       page === "..." ? (
+                         <span key={`ellipsis-${idx}`} className="sd-page-ellipsis">…</span>
+                       ) : (
+                         <button
+                           key={page}
+                           onClick={() => handleSdPageChange(page)}
+                           className={`sd-page-btn ${sdCurrentPage === page ? "active" : ""}`}
+                         >
+                           {page}
+                         </button>
+                       )
+                     )}
+                     <button onClick={() => handleSdPageChange(sdCurrentPage + 1)} disabled={sdCurrentPage === sdTotalPages} className="sd-page-btn">Next</button>
+                   </div>
+                 </div>
+               )}
             </div>
           </div>
         )}

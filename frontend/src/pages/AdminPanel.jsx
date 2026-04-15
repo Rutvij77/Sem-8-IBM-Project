@@ -215,6 +215,37 @@ export default function AdminPanel() {
     }
   };
 
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5; // max page buttons between first and last
+
+    if (totalPages <= maxVisible + 2) {
+      // Show all pages if total is small
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      // Always include first page
+      pages.push(1);
+
+      let start = Math.max(2, currentPage - 1);
+      let end = Math.min(totalPages - 1, currentPage + 1);
+
+      // Adjust window to always show at least 3 middle pages
+      if (currentPage <= 3) {
+        end = Math.min(maxVisible, totalPages - 1);
+      } else if (currentPage >= totalPages - 2) {
+        start = Math.max(2, totalPages - maxVisible + 1);
+      }
+
+      if (start > 2) pages.push("...");
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (end < totalPages - 1) pages.push("...");
+
+      // Always include last page
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
   const renderPagination = () => {
     return (
       <div className="pagination">
@@ -223,15 +254,19 @@ export default function AdminPanel() {
         </span>
         <div className="pagination-controls">
           <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="page-btn">Prev</button>
-          {[...Array(totalPages)].map((_, i) => (
-            <button
-              key={i + 1}
-              onClick={() => handlePageChange(i + 1)}
-              className={`page-btn ${currentPage === i + 1 ? "active" : ""}`}
-            >
-              {i + 1}
-            </button>
-          ))}
+          {getPageNumbers().map((page, idx) =>
+            page === "..." ? (
+              <span key={`ellipsis-${idx}`} className="page-ellipsis">…</span>
+            ) : (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`page-btn ${currentPage === page ? "active" : ""}`}
+              >
+                {page}
+              </button>
+            )
+          )}
           <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="page-btn">Next</button>
         </div>
       </div>
