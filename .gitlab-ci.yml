@@ -1,0 +1,30 @@
+stages:
+  - build-and-validate
+
+# Job 1: Check Frontend
+frontend_validation:
+  stage: build-and-validate
+  image: node:18
+  script:
+    - echo "Validating Frontend React/Vite app..."
+    - cd frontend
+    # Install all dependencies precisely
+    - npm install
+    # Execute the build command to ensure no UI compilation errors exist
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/dist/
+    expire_in: 1 hour
+
+# Job 2: Check Backend
+backend_validation:
+  stage: build-and-validate
+  image: python:3.10
+  script:
+    - echo "Validating Backend Python/Flask app..."
+    - cd backend
+    # Install required dependencies
+    - pip install -r requirements.txt
+    # Run a syntax check compiler across all python files
+    - python -m compileall .
