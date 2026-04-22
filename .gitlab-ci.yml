@@ -15,7 +15,7 @@ frontend_validation:
   artifacts:
     paths:
       - frontend/dist/
-    expire_in: 1 hour
+    expire_in: 1h
 
 # Job 2: Check Backend
 backend_validation:
