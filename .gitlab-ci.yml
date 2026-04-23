@@ -1,5 +1,6 @@
 stages:
   - build-and-validate
+  - deploy
 
 # Job 1: Check Frontend
 frontend_validation:
@@ -28,3 +29,20 @@ backend_validation:
     - pip install -r requirements.txt
     # Run a syntax check compiler across all python files
     - python -m compileall .
+
+# Job 3: Deploy Frontend to Vercel
+deploy_frontend:
+  stage: deploy
+  image: node:18
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  script:
+    - echo "Deploying Frontend to Vercel..."
+    - cd frontend
+    - npm install -g vercel
+    # Pull Vercel Environment Variables
+    - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+    # Build Project Artifacts
+    - vercel build --prod --token=$VERCEL_TOKEN
+    # Deploy to Vercel
+    - vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
